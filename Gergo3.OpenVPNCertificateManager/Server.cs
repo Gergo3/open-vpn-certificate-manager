@@ -14,6 +14,7 @@ public class Server
     
     public string Password { private get; set; }
     
+    [InverseProperty(nameof(User.ServerId))]
     public ICollection<User> Users { get; set; }
 
     public string CaCertString { get; set; }
@@ -24,7 +25,7 @@ public class Server
     public string ServerCertString { get; set; }
     [NotMapped]
     public X509Certificate2 ServerCert =>
-    field ??= X509CertificateLoader.LoadPkcs12(Convert.FromBase64String(ServerCertString),Password);
+        field ??= X509CertificateLoader.LoadPkcs12(Convert.FromBase64String(ServerCertString),Password);
 
 
     private static CertificateRequest CreateCertificateRequest(string name, bool isCa)
