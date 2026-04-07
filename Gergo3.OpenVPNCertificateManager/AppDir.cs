@@ -12,4 +12,9 @@ public static class AppDir
     public static string DbPath => Path.Combine(ApplicationData, "OpenVPNCertificateManager.db");
 
     public static readonly DirectoryInfo OutputDir = new(Path.Combine(ApplicationData, "output"));
+
+    static AppDir()
+    {
+        Directory.CreateDirectory(OutputDir.FullName);
+    }
 }

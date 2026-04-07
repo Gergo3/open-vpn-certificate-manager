@@ -9,10 +9,30 @@
         Title="Gergo3.OpenVPNCertificateManager">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
-            
+            <MenuItem Header="Add"
+                      Command="{Binding AddServerAsync}"
+                      />
+            <MenuItem Header="Remove"
+                      Command="{Binding RemoveServerAsync}"
+                      />
+            <MenuItem Header="Edit"
+                      Command="{Binding EditServer}"
+                      />
+            <MenuItem Header="Refresh"
+                      Command="{Binding RefreshServers}"
+            />
         </Menu>
         <DataGrid DockPanel.Dock="Top"
-                  />
+                  ItemsSource="{Binding Servers}"
+                  IsReadOnly="True"
+                  SelectedItem="{Binding SelectedServer}"
+                  >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name"
+                                    Binding="{Binding Name}"
+                                    />
+            </DataGrid.Columns>
+        </DataGrid>
         
     </DockPanel>
 </Window>
