@@ -37,10 +37,4 @@ public partial class AddServerPopup : Window
     }
     
     private class InputNullException : Exception;
-    public struct AddServerPopupResult
-    {
-        public string Name { get; set; }
-        public string Domain { get; set; }
-        public string Password { get; set; }
-    }
 }

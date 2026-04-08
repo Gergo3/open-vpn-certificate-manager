@@ -10,7 +10,8 @@ namespace Gergo3.OpenVPNCertificateManager;
 
 public class ViewModel : INotifyPropertyChanged
 {
-    private readonly MainWindow _mainWindow;
+    private readonly IWindowService _windowService;
+    private readonly IServerService _serverService;
 
     public ObservableCollection<Server> Servers
     {
@@ -42,38 +43,33 @@ public class ViewModel : INotifyPropertyChanged
     public async Task RemoveServerAsync()
     {
         Server server = SelectedServer ?? throw new ArgumentNullException(nameof(SelectedServer));
-        await using var db = new OpenVpnCertificateManagerContext();
-        db.Servers.Remove(server);
-        await db.SaveChangesAsync();
+        
+        await _serverService.RemoveServerAsync(server);
         
         await RefreshServers();
     }
 
     public async Task AddServerAsync()
     {
-        var data = await new AddServerPopup().ShowDialog<AddServerPopup.AddServerPopupResult>(_mainWindow);
+        var data = await _windowService.ShowAddServerPopupWindow<AddServerPopupResult>(this);
+        //var data = await new AddServerPopup().ShowDialog<AddServerPopup.AddServerPopupResult>(_mainWindow);
         
         Server server = new (data.Name, data.Domain, data.Password);
 
-        await using OpenVpnCertificateManagerContext db = new();
-        
-        db.Servers.Add(server);
-        await db.SaveChangesAsync();
-        
+        await _serverService.AddServerAsync(server);
         
         await RefreshServers();
     }
 
     public async Task RefreshServers()
     {
-        using OpenVpnCertificateManagerContext db = new();
-        
-        Servers = new(await db.Servers.ToArrayAsync());
+        Servers = await _serverService.GetServersAsync();
     }
 
-    public ViewModel(MainWindow mainWindow)
+    public ViewModel(IWindowService windowService, IServerService serverService)
     {
-        _mainWindow = mainWindow;
+        _windowService  = windowService;
+        _serverService = serverService;
         
         _ = RefreshServers();
         

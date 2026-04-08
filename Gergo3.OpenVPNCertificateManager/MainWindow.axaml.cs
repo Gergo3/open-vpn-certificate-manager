@@ -2,12 +2,12 @@ using Avalonia.Controls;
 
 namespace Gergo3.OpenVPNCertificateManager;
 
-public partial class MainWindow : Window
+public partial class MainWindow : Window , IMainWindow
 {
-    public MainWindow()
+    public MainWindow(ViewModel viewModel)
     {
         InitializeComponent();
         
-        DataContext = new ViewModel(this);
+        DataContext = viewModel;
     }
 }

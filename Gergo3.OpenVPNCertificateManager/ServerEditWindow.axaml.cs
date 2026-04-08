@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Gergo3.OpenVPNCertificateManager;
 
-public partial class ServerEditWindow : Window
+public partial class ServerEditWindow : Window, IServerEditWindow
 {
     public ServerEditWindow()
     {
