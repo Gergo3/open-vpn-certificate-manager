@@ -4,6 +4,7 @@
     <option name="projectPerEditor">
       <map>
         <entry key="Gergo3.OpenVPNCertificateManager/AddServerPopup.axaml" value="Gergo3.OpenVPNCertificateManager/Gergo3.OpenVPNCertificateManager.csproj" />
+        <entry key="Gergo3.OpenVPNCertificateManager/AddUserPopup.axaml" value="Gergo3.OpenVPNCertificateManager/Gergo3.OpenVPNCertificateManager.csproj" />
         <entry key="Gergo3.OpenVPNCertificateManager/MainWindow.axaml" value="Gergo3.OpenVPNCertificateManager/Gergo3.OpenVPNCertificateManager.csproj" />
         <entry key="Gergo3.OpenVPNCertificateManager/ServerEditWindow.axaml" value="Gergo3.OpenVPNCertificateManager/Gergo3.OpenVPNCertificateManager.csproj" />
       </map>

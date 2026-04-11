@@ -16,13 +16,23 @@ public class AvaloniaWindowService(IServiceProvider provider) : IWindowService
             ? desktop.Windows.Single(x => x.DataContext == viewModel)
             : throw new InvalidOperationException("No desktop lifetime");
 
-    public void ShowServerEditWindow()
+    public void ShowServerEditWindow(Server server)
     {
-        throw new System.NotImplementedException();
+        ArgumentNullException.ThrowIfNull(server);
+        var window = provider.GetRequiredService<ServerEditWindow>();
+        if (window.DataContext is ServerEditWindowViewModel viewModel)
+            viewModel.Server = server;
+        else throw new InvalidOperationException("Invalid view model");
+        window.Show();
     }
 
     public Task<TResult> ShowAddServerPopupWindow<TResult>(object viewModel) => 
         provider
             .GetRequiredService<AddServerPopup>()
             .ShowDialog<TResult>(GetParentWindow(viewModel));
+
+    public Task<TResult> ShowDialog<TWindow, TResult>(object viewModel) where TWindow : IDialog =>
+        provider.GetRequiredService<TWindow>() is Window window
+            ? window.ShowDialog<TResult>(GetParentWindow(viewModel))
+            : throw new ArgumentException("Window must be avalonia window", nameof(TWindow));
 }

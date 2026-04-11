@@ -9,6 +9,10 @@ namespace Gergo3.OpenVPNCertificateManager;
 
 public class Server
 {
+    public const int CaLifeTime = 10;
+    public const int ServerLifeTime = 10;
+    public const int ClientLifeTime = 2;
+    
     [Key]
     public Guid Id { get; private set; }
     [MaxLength(100)]
@@ -61,8 +65,6 @@ public class Server
         Base64FormattingOptions.InsertLineBreaks) +
         "\n-----END PRIVATE KEY-----";
 
-    private class PasswordNotSetException : Exception;
-
     private static CertificateRequest CreateCertificateRequest(string name, bool isCa)
     {
         RSA key = RSA.Create(2048);
@@ -111,7 +113,7 @@ public class Server
         return request.Create(
             CaCert,
             DateTimeOffset.Now,
-            DateTimeOffset.Now.AddYears(1),
+            DateTimeOffset.Now.AddYears(isServer ? ServerLifeTime : ClientLifeTime),
             Guid.NewGuid().ToByteArray());
     }
 
@@ -129,7 +131,7 @@ public class Server
             CreateCertificateRequest($"{name}-ca", true)
             .CreateSelfSigned(
             DateTimeOffset.Now,
-            DateTimeOffset.Now.AddYears(1))
+            DateTimeOffset.Now.AddYears(CaLifeTime))
             .Export(X509ContentType.Pfx, Password)
             );
 
@@ -140,12 +142,19 @@ public class Server
                     .Export(X509ContentType.Pfx, Password));
     }
 
-    public void AddUser(string name)
+    public User CreateUser(string name)
     {
         User user = new();
         
-        user.Id = Guid.NewGuid();
         user.Username = name;
+        user.ServerId = Id;
 
+        user.CertString =
+            Convert.ToBase64String(
+                CreateCertificate($"{Name}-{name}", false)
+                    .Export(X509ContentType.Pfx, Password));
+
+        
+        return user;
     }
 }

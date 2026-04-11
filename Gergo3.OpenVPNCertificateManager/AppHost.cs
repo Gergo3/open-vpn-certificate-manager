@@ -14,6 +14,9 @@ public static class AppHost
         
         //services
         services.AddTransient<IServerService, DbServerService>();
+        services.AddTransient<IUserService,DbUserService>();
+        services.AddTransient<IServerExporterService, ServerExporterService>();
+        services.AddTransient<IUserExporterService, UserExporterService>();
         
         //ViewModels
         services.AddTransient<ViewModel>();

@@ -6,10 +6,10 @@ namespace Gergo3.OpenVPNCertificateManager;
 
 public partial class ServerEditWindow : Window, IServerEditWindow
 {
-    public ServerEditWindow()
+    public ServerEditWindow(ServerEditWindowViewModel viewModel)
     {
         InitializeComponent();
 
-        DataContext = new ServerEditWindowViewModel();
+        DataContext = viewModel;
     }
 }

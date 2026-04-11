@@ -5,7 +5,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Gergo3.OpenVPNCertificateManager;
 
-public partial class AddServerPopup : Window
+public partial class AddServerPopup : Window, IDialog
 {
     public string? NameInput { get; set; }
     public string? Domain { get; set; }

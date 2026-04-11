@@ -35,9 +35,11 @@ public class ViewModel : INotifyPropertyChanged
         }
     }
 
-    public void EditServer(Server server)
+    public void EditServer()
     {
+        if (SelectedServer == null) return;
         
+        _windowService.ShowServerEditWindow(SelectedServer);
     }
 
     public async Task RemoveServerAsync()

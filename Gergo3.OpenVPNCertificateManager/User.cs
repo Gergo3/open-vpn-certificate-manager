@@ -8,7 +8,7 @@ namespace Gergo3.OpenVPNCertificateManager;
 public class User
 {
     [Key]
-    public Guid Id {get; set;}
+    public Guid Id {get; set;} = Guid.NewGuid();
     [MaxLength(100)]
     [Required]
     public string Username {get; set;}
@@ -18,21 +18,13 @@ public class User
     [ForeignKey(nameof(ServerId))]
     public Server Server {get; set;}
     
-    
-    
     [Required]
-    public string CaCertString { get; set; }
-
-    [NotMapped]
-    public X509Certificate2 CaCert =>
-        field ??= X509CertificateLoader.LoadPkcs12(Convert.FromBase64String(CaCertString),Password);
-
-    public string? Password { get; set; }
-
-    [Required]
-    public string ServerCertString { get; set; }
-    [NotMapped]
-    public X509Certificate2 ServerCert =>
-        field ??= X509CertificateLoader.LoadPkcs12(Convert.FromBase64String(ServerCertString),Password);
+    public string CertString {get; set;}
     
+    [NotMapped]
+    public X509Certificate2 Certificate =>
+        field ??= X509CertificateLoader.LoadPkcs12(Convert.FromBase64String(CertString),Password ?? throw new PasswordNotSetException());
+    
+    [NotMapped]
+    public string? Password { private get; set;}
 }

@@ -7,5 +7,36 @@
         x:Class="Gergo3.OpenVPNCertificateManager.ServerEditWindow"
         x:DataType="local:ServerEditWindowViewModel"
         Title="ServerEditWindow">
-    Welcome to Avalonia!
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Add"
+                      Command="{Binding AddUserAsync}"
+            />
+            <MenuItem Header="Export server"
+                      Command="{Binding ExportServerAsync}"
+            />
+            <MenuItem Header="Export user"
+                      Command="{Binding ExportUserAsync}"
+            />
+            <MenuItem Header="Refresh"
+                      Command="{Binding RefreshUsersAsync}"
+            />
+            <TextBox Watermark="password"
+                     Text="{Binding Password, Mode=OneWayToSource}"
+                     PasswordChar="*"
+                     />
+        </Menu>
+        <DataGrid DockPanel.Dock="Top"
+                  ItemsSource="{Binding Users}"
+                  IsReadOnly="True"
+                  SelectedItem="{Binding SelectedUser}"
+        >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name"
+                                    Binding="{Binding Username}"
+                />
+            </DataGrid.Columns>
+        </DataGrid>
+        
+    </DockPanel>
 </Window>

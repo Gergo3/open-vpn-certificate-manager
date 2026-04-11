@@ -21,8 +21,9 @@ public partial class App : Application
             
             //windows
             x.AddTransient<MainWindow>();
-            x.AddTransient<IServerEditWindow,ServerEditWindow>();
+            x.AddTransient<ServerEditWindow>();
             x.AddTransient<AddServerPopup>();
+            x.AddTransient<AddUserPopup>();
         });
         
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
