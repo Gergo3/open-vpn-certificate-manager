@@ -9,7 +9,7 @@ namespace Gergo3.OpenVPNCertificateManager;
 
 public class Server
 {
-    public const int CaLifeTime = 10;
+    public const int CaLifeTime = 11;
     public const int ServerLifeTime = 10;
     public const int ClientLifeTime = 2;
     
@@ -64,6 +64,15 @@ public class Server
             .ExportPkcs8PrivateKey() ??  throw new FormatException("Server is missing a private key."),
         Base64FormattingOptions.InsertLineBreaks) +
         "\n-----END PRIVATE KEY-----";
+    
+    public string CaKey => 
+        "-----BEGIN PRIVATE KEY-----\n" +
+        Convert.ToBase64String(
+            CaCert
+                .GetRSAPrivateKey()?
+                .ExportPkcs8PrivateKey() ??  throw new FormatException("Server is missing a private key."),
+            Base64FormattingOptions.InsertLineBreaks) +
+        "\n-----END PRIVATE KEY-----";
 
     private static CertificateRequest CreateCertificateRequest(string name, bool isCa)
     {
@@ -109,12 +118,19 @@ public class Server
             san.AddDnsName(Domain);
             request.CertificateExtensions.Add(san.Build());
         }
+        
+        RSA privateKey =
+            request.CreateSelfSigned(
+                DateTimeOffset.Now.AddDays(1),
+                DateTimeOffset.Now.AddYears(1)).GetRSAPrivateKey() 
+            ?? throw new FormatException("request missing private key");
 
         return request.Create(
             CaCert,
             DateTimeOffset.Now,
             DateTimeOffset.Now.AddYears(isServer ? ServerLifeTime : ClientLifeTime),
-            Guid.NewGuid().ToByteArray());
+            Guid.NewGuid().ToByteArray())
+            .CopyWithPrivateKey(privateKey);
     }
 
     //for EntityFramework
@@ -134,7 +150,6 @@ public class Server
             DateTimeOffset.Now.AddYears(CaLifeTime))
             .Export(X509ContentType.Pfx, Password)
             );
-
 
         ServerCertString =
             Convert.ToBase64String(
