@@ -56,7 +56,7 @@ public class ViewModel : INotifyPropertyChanged
         var data = await _windowService.ShowAddServerPopupWindow<AddServerPopupResult>(this);
         //var data = await new AddServerPopup().ShowDialog<AddServerPopup.AddServerPopupResult>(_mainWindow);
         
-        Server server = new (data.Name, data.Domain, data.Password);
+        Server server = new (data.Name, data.Domain, data.Password, data.Interface, data.Protocol, data.Port);
 
         await _serverService.AddServerAsync(server);
         

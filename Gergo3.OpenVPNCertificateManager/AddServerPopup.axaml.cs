@@ -2,6 +2,8 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 
 namespace Gergo3.OpenVPNCertificateManager;
 
@@ -9,6 +11,9 @@ public partial class AddServerPopup : Window, IDialog
 {
     public string? NameInput { get; set; }
     public string? Domain { get; set; }
+    public int? Port { get; set; }
+    public Protocol? Protocol { get; set; }
+    public Interface? Interface { get; set; }
     public string? Password { get; set; }
     public string? PasswordConfirmation { get; set; }
     public void Ok()
@@ -21,10 +26,14 @@ public partial class AddServerPopup : Window, IDialog
                 Name = NameInput ?? throw new InputNullException(),
                 Domain = Domain ?? throw new InputNullException(),
                 Password = Password ?? throw new InputNullException(),
+                Port =  Port ?? throw new InputNullException(),
+                Protocol = Protocol ?? throw new InputNullException(),
+                Interface = Interface ?? throw new InputNullException(),
             });
         }
         catch (InputNullException e)
         {
+             MessageBoxManager.GetMessageBoxStandard("Error", e.ToString()).ShowWindowDialogAsync(this);
         }
     }
 

@@ -22,6 +22,15 @@ public class Server
     [Required]
     public string Domain { get; private set; }
     
+    [Required]
+    public int Port { get; private set; }
+    
+    [Required]
+    public Protocol Protocol { get; private set; }
+    
+    [Required]
+    public Interface Interface { get; private set; }
+    
     [NotMapped]
     public string? Password { private get; set; }
     
@@ -135,12 +144,15 @@ public class Server
 
     //for EntityFramework
     private Server() {}
-    public Server(string name, string domain, string password)
+    public Server(string name, string domain, string password, Interface nic, Protocol protocol, int port)
     {
         Id = Guid.NewGuid();
         Name = name;
         Domain = domain;
         Password = password;
+        Interface = nic;
+        Protocol = protocol;
+        Port = port;
         
         CaCertString =
             Convert.ToBase64String(
