@@ -13,7 +13,9 @@ public partial class AddServerPopup : Window, IDialog
     public string? Domain { get; set; }
     public int? Port { get; set; }
     public Protocol? Protocol { get; set; }
+    public Protocol[] Protocols => Enum.GetValues<Protocol>();
     public Interface? Interface { get; set; }
+    public Interface[] Interfaces => Enum.GetValues<Interface>();
     public string? Password { get; set; }
     public string? PasswordConfirmation { get; set; }
     public void Ok()
