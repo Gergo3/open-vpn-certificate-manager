@@ -27,4 +27,22 @@ public class User
     
     [NotMapped]
     public string? Password { private get; set;}
+    
+    [NotMapped]
+    public string Crt => 
+        "-----BEGIN CERTIFICATE-----\n" +
+        Convert.ToBase64String(
+            Certificate.Export(X509ContentType.Cert),
+            Base64FormattingOptions.InsertLineBreaks) +
+        "\n-----END CERTIFICATE-----";
+    
+    [NotMapped]
+    public string Key => 
+        "-----BEGIN PRIVATE KEY-----\n" +
+        Convert.ToBase64String(
+            Certificate
+                .GetRSAPrivateKey()?
+                .ExportPkcs8PrivateKey() ??  throw new FormatException("Server is missing a private key."),
+            Base64FormattingOptions.InsertLineBreaks) +
+        "\n-----END PRIVATE KEY-----";
 }

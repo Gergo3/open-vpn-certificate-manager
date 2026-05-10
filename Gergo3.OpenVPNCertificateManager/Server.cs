@@ -51,6 +51,7 @@ public class Server
         field ??= X509CertificateLoader.LoadPkcs12(Convert.FromBase64String(ServerCertString),Password ?? throw new PasswordNotSetException());
     
     
+    [NotMapped]
     public string CaCrt => 
         "-----BEGIN CERTIFICATE-----\n" +
         Convert.ToBase64String(
@@ -58,6 +59,7 @@ public class Server
             Base64FormattingOptions.InsertLineBreaks) +
         "\n-----END CERTIFICATE-----";
     
+    [NotMapped]
     public string ServerCrt => 
         "-----BEGIN CERTIFICATE-----\n" +
         Convert.ToBase64String(
@@ -65,6 +67,7 @@ public class Server
             Base64FormattingOptions.InsertLineBreaks) +
         "\n-----END CERTIFICATE-----";
     
+    [NotMapped]
     public string ServerKey => 
         "-----BEGIN PRIVATE KEY-----\n" +
         Convert.ToBase64String(
@@ -74,6 +77,7 @@ public class Server
         Base64FormattingOptions.InsertLineBreaks) +
         "\n-----END PRIVATE KEY-----";
     
+    [NotMapped]
     public string CaKey => 
         "-----BEGIN PRIVATE KEY-----\n" +
         Convert.ToBase64String(
