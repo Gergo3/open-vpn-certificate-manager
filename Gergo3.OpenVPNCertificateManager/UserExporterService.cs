@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls.Shapes;
 
@@ -7,15 +8,17 @@ namespace Gergo3.OpenVPNCertificateManager;
 
 public class UserExporterService : IUserExporterService
 {
-    public async Task ExportUserAsync(User user)
+    public async Task ExportUserAsync(User user, Server server)
     {
-        string fileName = System.IO.Path.Join(AppDir.OutputDir.FullName, user.Username.Replace(' ', '-'));
+        ArgumentNullException.ThrowIfNull(user);
+
+        string fileName = System.IO.Path.Join(AppDir.OutputDir.FullName, user.Username.Replace(' ', '-') + ".ovpn");
 
         string data = $"""
                        client
-                       dev {(user.Server.Interface == Interface.Tun ? "tun" : "tap")}
-                       proto {(user.Server.Protocol == Protocol.Tcp ? "tcp" : "udp")}
-                       remote {user.Server.Domain} {user.Server.Port}
+                       dev {(server.Interface == Interface.Tun ? "tun" : "tap")}
+                       proto {(server.Protocol == Protocol.Tcp ? "tcp" : "udp")}
+                       remote {server.Domain} {server.Port}
                        
                        resolv-retry infinite
                        nobind
@@ -29,21 +32,15 @@ public class UserExporterService : IUserExporterService
                        verb 3
                        
                        <ca>
-                       -----BEGIN CERTIFICATE-----
-                       {user.Server.CaCrt}
-                       -----END CERTIFICATE-----
+                       {server.CaCrt}
                        </ca>
                        
                        <cert>
-                       -----BEGIN CERTIFICATE-----
                        {user.Crt}
-                       -----END CERTIFICATE-----
                        </cert>
                        
                        <key>
-                       -----BEGIN PRIVATE KEY-----
                        {user.Key}
-                       -----END PRIVATE KEY-----
                        </key>
                        """;
         

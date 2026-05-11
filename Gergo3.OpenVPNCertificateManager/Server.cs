@@ -48,7 +48,12 @@ public class Server
     public string ServerCertString { get; private set; }
     [NotMapped]
     public X509Certificate2 ServerCert =>
-        field ??= X509CertificateLoader.LoadPkcs12(Convert.FromBase64String(ServerCertString),Password ?? throw new PasswordNotSetException());
+        field ??= X509CertificateLoader.LoadPkcs12(
+            Convert.FromBase64String(ServerCertString),
+            Password ?? throw new PasswordNotSetException(),
+            X509KeyStorageFlags.Exportable |
+            X509KeyStorageFlags.EphemeralKeySet,
+            Pkcs12LoaderLimits.Defaults);
     
     
     [NotMapped]
