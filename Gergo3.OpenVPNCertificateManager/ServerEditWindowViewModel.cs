@@ -29,7 +29,17 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
         }
     } = [];
 
-    public User? SelectedUser { get; set; }
+    public User? SelectedUser
+    {
+        get
+        {
+            User? user = field;
+            user?.Password = Password;
+            return user;
+        }
+        set;
+    }
+
     public async void AddUserAsync()
     {
         string name = await windowService.ShowDialog<AddUserPopup,string>(this);
@@ -43,7 +53,7 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
         await serverExporterService.ExportServerAsync(Server);
 
     public async void ExportUserAsync() => 
-        await userExporterService.ExportUserAsync(SelectedUser);
+        await userExporterService.ExportUserAsync(SelectedUser, Server);
 
     public async void RefreshUsersAsync() => 
         Users = await userService.GetUsersAsync(Server);

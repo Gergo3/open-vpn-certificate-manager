@@ -4,6 +4,6 @@ namespace Gergo3.OpenVPNCertificateManager;
 
 public interface IUserExporterService
 {
-    public Task ExportUserAsync(User user);
+    public Task ExportUserAsync(User user, Server server);
     
 }

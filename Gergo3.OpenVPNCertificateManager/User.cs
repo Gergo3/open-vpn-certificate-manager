@@ -23,7 +23,12 @@ public class User
     
     [NotMapped]
     public X509Certificate2 Certificate =>
-        field ??= X509CertificateLoader.LoadPkcs12(Convert.FromBase64String(CertString),Password ?? throw new PasswordNotSetException());
+        field ??= X509CertificateLoader.LoadPkcs12(
+            Convert.FromBase64String(CertString),
+            Password ?? throw new PasswordNotSetException(),
+            X509KeyStorageFlags.Exportable |
+            X509KeyStorageFlags.EphemeralKeySet,
+            Pkcs12LoaderLimits.Defaults);
     
     [NotMapped]
     public string? Password { private get; set;}
