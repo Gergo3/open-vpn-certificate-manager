@@ -10,10 +10,21 @@ namespace Gergo3.OpenVPNCertificateManager;
 
 public class ViewModel : INotifyPropertyChanged
 {
+    #region Constructor
     private readonly IWindowService _windowService;
     private readonly IServerService _serverService;
     private readonly IDialogService _dialogService;
 
+    public ViewModel(IWindowService windowService, IServerService serverService, IDialogService dialogService)
+    {
+        _windowService  = windowService;
+        _serverService = serverService;
+        _dialogService = dialogService;
+        
+        _ = RefreshServers();
+
+    }
+    #endregion
 
 
     public ObservableCollection<Server> Servers
@@ -26,6 +37,7 @@ public class ViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     } = new();
+    
 
     public Server? SelectedServer
     {
@@ -37,6 +49,9 @@ public class ViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+    
+    
+    
 
     public void EditServer()
     {
@@ -44,6 +59,7 @@ public class ViewModel : INotifyPropertyChanged
         
         _windowService.ShowServerEditWindow(SelectedServer);
     }
+    
 
     public async Task RemoveServerAsync()
     {
@@ -75,6 +91,7 @@ public class ViewModel : INotifyPropertyChanged
         
         await RefreshServers();
     }
+    
 
     public async Task AddServerAsync()
     {
@@ -87,6 +104,7 @@ public class ViewModel : INotifyPropertyChanged
         
         await RefreshServers();
     }
+    
 
     public async Task RefreshServers()
     {
@@ -101,17 +119,12 @@ public class ViewModel : INotifyPropertyChanged
             //_ = _dialogService.ShowErrorAsync(e.Message, e.ToString(), this);
         }
     }
+    
+    
+    
 
-    public ViewModel(IWindowService windowService, IServerService serverService, IDialogService dialogService)
-    {
-        _windowService  = windowService;
-        _serverService = serverService;
-        _dialogService = dialogService;
-        
-        _ = RefreshServers();
 
-    }
-
+    #region PropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -126,4 +139,5 @@ public class ViewModel : INotifyPropertyChanged
         OnPropertyChanged(propertyName);
         return true;
     }
+    #endregion
 }

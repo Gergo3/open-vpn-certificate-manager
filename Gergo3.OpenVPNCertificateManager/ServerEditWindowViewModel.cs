@@ -18,7 +18,11 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
             OnPropertyChanged();
         }
     }
+    
+    
     public Server? Server { get; set; }
+    
+    
     public ObservableCollection<User> Users
     {
         get;
@@ -29,6 +33,7 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
             OnPropertyChanged();
         }
     } = [];
+    
 
     public User? SelectedUser
     {
@@ -40,6 +45,9 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
         }
         set;
     }
+    
+    
+    
 
     public async Task AddUserAsync()
     {
@@ -52,15 +60,23 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
         await RefreshUsersAsync();
     }
     
+    
     public async Task ExportServerAsync() => 
         await serverExporterService.ExportServerAsync(Server);
+    
 
     public async Task ExportUserAsync() => 
         await userExporterService.ExportUserAsync(SelectedUser, Server);
+    
 
     public async Task RefreshUsersAsync() => 
         Users = await userService.GetUsersAsync(Server);
 
+    
+    
+    
+    
+    #region PropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -75,4 +91,5 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
         OnPropertyChanged(propertyName);
         return true;
     }
+    #endregion
 }
