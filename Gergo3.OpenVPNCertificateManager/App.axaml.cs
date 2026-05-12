@@ -18,6 +18,7 @@ public partial class App : Application
         {
             //services
             x.AddTransient<IWindowService,AvaloniaWindowService>();
+            x.AddTransient<IDialogService,AvaloniaDialogService>();
             
             //windows
             x.AddTransient<MainWindow>();

@@ -53,6 +53,10 @@ public class ViewModel : INotifyPropertyChanged
 
     public async Task AddServerAsync()
     {
+        await _dialogService.ShowConfirmationAsync("test","test", this);
+        await _dialogService.ShowMessageAsync("test","test", this);
+        await _dialogService.ShowErrorAsync("test","test", this);
+        
         var data = await _windowService.ShowAddServerPopupWindow<AddServerPopupResult>(this);
         //var data = await new AddServerPopup().ShowDialog<AddServerPopup.AddServerPopupResult>(_mainWindow);
         
@@ -68,14 +72,17 @@ public class ViewModel : INotifyPropertyChanged
         Servers = await _serverService.GetServersAsync();
     }
 
-    public ViewModel(IWindowService windowService, IServerService serverService)
+    public ViewModel(IWindowService windowService, IServerService serverService, IDialogService dialogService)
     {
         _windowService  = windowService;
         _serverService = serverService;
+        _dialogService = dialogService;
         
         _ = RefreshServers();
-        
+
     }
+
+    private IDialogService _dialogService;
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

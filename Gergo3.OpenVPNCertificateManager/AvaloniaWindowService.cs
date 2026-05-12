@@ -10,7 +10,7 @@ namespace Gergo3.OpenVPNCertificateManager;
 
 public class AvaloniaWindowService(IServiceProvider provider) : IWindowService
 {
-    private Window GetParentWindow(object viewModel) =>
+    public static Window GetParentWindow(object viewModel) =>
         Application.Current?.ApplicationLifetime
             is IClassicDesktopStyleApplicationLifetime desktop
             ? desktop.Windows.Single(x => x.DataContext == viewModel)
