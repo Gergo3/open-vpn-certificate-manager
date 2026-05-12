@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Gergo3.OpenVPNCertificateManager;
 
@@ -40,22 +41,24 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
         set;
     }
 
-    public async void AddUserAsync()
+    public async Task AddUserAsync()
     {
         string name = await windowService.ShowDialog<AddUserPopup,string>(this);
         
         User user = Server.CreateUser(name);
 
         await userService.AddUserAsync(user);
+        
+        await RefreshUsersAsync();
     }
     
-    public async void ExportServerAsync() => 
+    public async Task ExportServerAsync() => 
         await serverExporterService.ExportServerAsync(Server);
 
-    public async void ExportUserAsync() => 
+    public async Task ExportUserAsync() => 
         await userExporterService.ExportUserAsync(SelectedUser, Server);
 
-    public async void RefreshUsersAsync() => 
+    public async Task RefreshUsersAsync() => 
         Users = await userService.GetUsersAsync(Server);
 
     public event PropertyChangedEventHandler? PropertyChanged;
