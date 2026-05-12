@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Gergo3.OpenVPNCertificateManager;
 
-public class ServerEditWindowViewModel(IUserService userService, IWindowService windowService, IServerExporterService serverExporterService, IUserExporterService userExporterService) : INotifyPropertyChanged
+public class ServerEditWindowViewModel(IUserService userService, IWindowService windowService, IServerExporterService serverExporterService, IUserExporterService userExporterService, IDialogService dialogService) : INotifyPropertyChanged
 {
     public string? Password
     {
@@ -51,11 +52,30 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
 
     public async Task AddUserAsync()
     {
-        string name = await windowService.ShowDialog<AddUserPopup,string>(this);
-        
-        User user = Server.CreateUser(name);
+        try
+        {
+            string name = await windowService.ShowDialog<AddUserPopup, string>(this);
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                _ = dialogService.ShowMessageAsync("Name can not be empty", "Name cannot be empty", this);
+                return;
+            }
 
-        await userService.AddUserAsync(user);
+            Server server = Server ?? throw new InvalidOperationException("Server is not set");
+
+            User user = Server.CreateUser(name);
+
+            await userService.AddUserAsync(user);
+        }
+        catch (PasswordNotSetException e)
+        {
+            _ = dialogService.ShowMessageAsync("Password not set", "Enter password for this operation", this);
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e);
+            _ = dialogService.ShowErrorAsync(e.Message, e.ToString(), this);
+        }
         
         await RefreshUsersAsync();
     }

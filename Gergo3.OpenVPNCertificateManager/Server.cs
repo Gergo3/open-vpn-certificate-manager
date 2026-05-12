@@ -40,12 +40,20 @@ public class Server
     [Required]
     public string CaCertString { get; private set; }
 
+    /// <summary>
+    /// Ca certificate in PCKS format
+    /// </summary>
+    /// <exception cref="PasswordNotSetException">Thrown when <see cref="Password"/> is not set</exception>
     [NotMapped]
     public X509Certificate2 CaCert =>
         field ??= X509CertificateLoader.LoadPkcs12(Convert.FromBase64String(CaCertString),Password ?? throw new PasswordNotSetException());
     
     [Required]
     public string ServerCertString { get; private set; }
+    /// <summary>
+    /// Server certificate in PCKS format
+    /// </summary>
+    /// <exception cref="PasswordNotSetException">Thrown when <see cref="Password"/> is not set</exception>
     [NotMapped]
     public X509Certificate2 ServerCert =>
         field ??= X509CertificateLoader.LoadPkcs12(
@@ -56,6 +64,10 @@ public class Server
             Pkcs12LoaderLimits.Defaults);
     
     
+    /// <summary>
+    /// Ca certificate in Crt format
+    /// </summary>
+    /// <exception cref="PasswordNotSetException">Thrown when <see cref="Password"/> is not set</exception>
     [NotMapped]
     public string CaCrt => 
         "-----BEGIN CERTIFICATE-----\n" +
@@ -64,6 +76,10 @@ public class Server
             Base64FormattingOptions.InsertLineBreaks) +
         "\n-----END CERTIFICATE-----";
     
+    /// <summary>
+    /// Server certificate in Crt format
+    /// </summary>
+    /// <exception cref="PasswordNotSetException">Thrown when <see cref="Password"/> is not set</exception>
     [NotMapped]
     public string ServerCrt => 
         "-----BEGIN CERTIFICATE-----\n" +
@@ -72,6 +88,10 @@ public class Server
             Base64FormattingOptions.InsertLineBreaks) +
         "\n-----END CERTIFICATE-----";
     
+    /// <summary>
+    /// Server key
+    /// </summary>
+    /// <exception cref="PasswordNotSetException">Thrown when <see cref="Password"/> is not set</exception>
     [NotMapped]
     public string ServerKey => 
         "-----BEGIN PRIVATE KEY-----\n" +
@@ -82,6 +102,10 @@ public class Server
         Base64FormattingOptions.InsertLineBreaks) +
         "\n-----END PRIVATE KEY-----";
     
+    /// <summary>
+    /// Ca key
+    /// </summary>
+    /// <exception cref="PasswordNotSetException">Thrown when <see cref="Password"/> is not set</exception>
     [NotMapped]
     public string CaKey => 
         "-----BEGIN PRIVATE KEY-----\n" +
@@ -92,8 +116,17 @@ public class Server
             Base64FormattingOptions.InsertLineBreaks) +
         "\n-----END PRIVATE KEY-----";
 
-    private static CertificateRequest CreateCertificateRequest(string name, bool isCa)
+    /// <summary>
+    /// Creates a new <see cref="CertificateRequest"/>
+    /// </summary>
+    /// <param name="name">Name of the certificate holder</param>
+    /// <param name="isCa">Whether the certificate is a ca</param>
+    /// <returns>A new <see cref="CertificateRequest"/></returns>
+    /// <exception cref="ArgumentException">Thrown if <paramref name="name"/> is null, empty, or consists only of whitespace</exception>
+    private static CertificateRequest CreateCertificateRequest(string name, bool isCa = false)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        
         RSA key = RSA.Create(2048);
         
         CertificateRequest request = new(
@@ -110,8 +143,18 @@ public class Server
         return request;
     }
 
-    private X509Certificate2 CreateCertificate(string name, bool isServer)
+    /// <summary>
+    /// Creates a new <see cref="X509Certificate2"/> signed by <see cref="CaCert"/>
+    /// </summary>
+    /// <param name="name">Name of the certificate holder</param>
+    /// <param name="isServer">Whether the certificate is a server</param>
+    /// <returns>A new <see cref="X509Certificate"/></returns>
+    /// <exception cref="ArgumentException">Thrown if <paramref name="name"/> is null, empty, or consists only of whitespace; or if <see cref="Domain"/> is null or empty</exception>
+    /// <exception cref="PasswordNotSetException"><see cref="Password"/> is not set</exception>
+    private X509Certificate2 CreateCertificate(string name, bool isServer = false)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        
         CertificateRequest request =
             CreateCertificateRequest(name, false);
 
@@ -132,9 +175,16 @@ public class Server
         // SAN (important!)
         if (isServer)
         {
-            var san = new SubjectAlternativeNameBuilder();
-            san.AddDnsName(Domain);
-            request.CertificateExtensions.Add(san.Build());
+            try
+            {
+                var san = new SubjectAlternativeNameBuilder();
+                san.AddDnsName(Domain);
+                request.CertificateExtensions.Add(san.Build());
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                throw new ArgumentException(e.Message);
+            }
         }
         
         RSA privateKey =
@@ -178,8 +228,17 @@ public class Server
                     .Export(X509ContentType.Pfx, Password));
     }
 
+    /// <summary>
+    /// Creates a new <see cref="User"/> object of the server
+    /// </summary>
+    /// <param name="name">Name of the user</param>
+    /// <returns>A new <see cref="User"/></returns>
+    /// <exception cref="ArgumentException">Thrown if <see cref="Domain"/> or <paramref name="name"/> is null or empty</exception>
+    /// <exception cref="PasswordNotSetException"><see cref="Password"/> is not set</exception>
     public User CreateUser(string name)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        
         User user = new();
         
         user.Username = name;

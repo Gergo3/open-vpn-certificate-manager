@@ -55,9 +55,17 @@ public class ViewModel : INotifyPropertyChanged
 
     public void EditServer()
     {
-        if (SelectedServer == null) return;
+        try
+        {
+            if (SelectedServer == null) return;
         
-        _windowService.ShowServerEditWindow(SelectedServer);
+            _windowService.ShowServerEditWindow(SelectedServer);
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e);
+            _ = _dialogService.ShowErrorAsync(e.Message, e.ToString(), this);
+        }
     }
     
 
@@ -73,9 +81,7 @@ public class ViewModel : INotifyPropertyChanged
         }
         catch (ArgumentNullException e)
         {
-            Console.Error.WriteLine(e);
-            _ = _dialogService
-                .ShowMessageAsync("Select a server first", "No server selected", this);
+                return;
         }
         catch (InvalidOperationException e)
         {
@@ -95,12 +101,19 @@ public class ViewModel : INotifyPropertyChanged
 
     public async Task AddServerAsync()
     {
-        var data = await _windowService.ShowAddServerPopupWindow<AddServerPopupResult>(this);
-        //var data = await new AddServerPopup().ShowDialog<AddServerPopup.AddServerPopupResult>(_mainWindow);
+        try
+        {
+            var data = await _windowService.ShowAddServerPopupWindow<AddServerPopupResult>(this);
         
-        Server server = new (data.Name, data.Domain, data.Password, data.Interface, data.Protocol, data.Port);
+            Server server = new (data.Name, data.Domain, data.Password, data.Interface, data.Protocol, data.Port);
 
-        await _serverService.AddServerAsync(server);
+            await _serverService.AddServerAsync(server);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
         
         await RefreshServers();
     }

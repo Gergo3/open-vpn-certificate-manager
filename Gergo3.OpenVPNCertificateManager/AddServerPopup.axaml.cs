@@ -35,17 +35,21 @@ public partial class AddServerPopup : Window, IDialog
         }
         catch (InputNullException e)
         {
-             MessageBoxManager.GetMessageBoxStandard("Error", e.ToString()).ShowWindowDialogAsync(this);
+            _dialogService.ShowMessageAsync("Fill out all fields", "Fill out all fields", this);
         }
     }
 
 
-    public AddServerPopup()
+    public AddServerPopup(IDialogService dialogService)
     {
         InitializeComponent();
 
         DataContext = this;
+        
+        _dialogService= dialogService;
     }
+    
+    private readonly IDialogService _dialogService;
     
     private class InputNullException : Exception;
 }
