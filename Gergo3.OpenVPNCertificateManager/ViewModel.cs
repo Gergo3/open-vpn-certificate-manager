@@ -12,6 +12,9 @@ public class ViewModel : INotifyPropertyChanged
 {
     private readonly IWindowService _windowService;
     private readonly IServerService _serverService;
+    private readonly IDialogService _dialogService;
+
+
 
     public ObservableCollection<Server> Servers
     {
@@ -44,9 +47,31 @@ public class ViewModel : INotifyPropertyChanged
 
     public async Task RemoveServerAsync()
     {
-        Server server = SelectedServer ?? throw new ArgumentNullException(nameof(SelectedServer));
-        
-        await _serverService.RemoveServerAsync(server);
+        try
+        {
+            Server server = SelectedServer ?? throw new ArgumentNullException(nameof(SelectedServer));
+            
+            if (!await _dialogService.ShowConfirmationAsync($"Are you sure you want to remove {server.Name}?", "Remove server?", this)) return;
+
+            await _serverService.RemoveServerAsync(server);
+        }
+        catch (ArgumentNullException e)
+        {
+            Console.Error.WriteLine(e);
+            _ = _dialogService
+                .ShowMessageAsync("Select a server first", "No server selected", this);
+        }
+        catch (InvalidOperationException e)
+        {
+            Console.Error.WriteLine(e);
+            _ = _dialogService.ShowErrorAsync
+                ("The server does not exist, or was deleted", e.ToString(), this);
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e);
+            _ = _dialogService.ShowErrorAsync(e.Message, e.ToString(), this);
+        }
         
         await RefreshServers();
     }
@@ -65,13 +90,23 @@ public class ViewModel : INotifyPropertyChanged
 
     public async Task RefreshServers()
     {
-        Servers = await _serverService.GetServersAsync();
+        try
+        {
+            Servers = await _serverService.GetServersAsync();
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e);
+            //RefreshServers lefut mielőtt dialoge ablakot lehet megjeleníteni
+            //_ = _dialogService.ShowErrorAsync(e.Message, e.ToString(), this);
+        }
     }
 
-    public ViewModel(IWindowService windowService, IServerService serverService)
+    public ViewModel(IWindowService windowService, IServerService serverService, IDialogService dialogService)
     {
         _windowService  = windowService;
         _serverService = serverService;
+        _dialogService = dialogService;
         
         _ = RefreshServers();
         

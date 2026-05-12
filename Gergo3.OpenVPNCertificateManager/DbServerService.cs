@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,18 @@ public class DbServerService(IDbContextFactory<OpenVpnCertificateManagerContext>
     {
         await using OpenVpnCertificateManagerContext db = await factory.CreateDbContextAsync();
         db.Servers.Remove(server);
-        await db.SaveChangesAsync();
+        try
+        {
+            int affected = await db.SaveChangesAsync();
+            if (affected == 0)
+            {
+                throw new InvalidOperationException("Server does not exist, or was deleted");
+            }
+        }
+        catch (DbUpdateConcurrencyException e)
+        {
+            throw new InvalidOperationException("Server does not exist, or was deleted");
+        }
     }
     
 }
