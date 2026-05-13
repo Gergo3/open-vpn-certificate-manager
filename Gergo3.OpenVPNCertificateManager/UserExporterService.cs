@@ -6,13 +6,17 @@ using Avalonia.Controls.Shapes;
 
 namespace Gergo3.OpenVPNCertificateManager;
 
-public class UserExporterService : IUserExporterService
+public class UserExporterService(IDialogService dialogService) : IUserExporterService
 {
-    public async Task ExportUserAsync(User user, Server server)
+    public async Task ExportUserAsync(User user, Server server, object owner)
     {
         ArgumentNullException.ThrowIfNull(user);
+        ArgumentNullException.ThrowIfNull(server);
+        ArgumentNullException.ThrowIfNull(owner);
 
-        string fileName = System.IO.Path.Join(AppDir.OutputDir.FullName, user.Username.Replace(' ', '-') + ".ovpn");
+        //string fileName = System.IO.Path.Join(AppDir.OutputDir.FullName, user.Username.Replace(' ', '-') + ".ovpn");
+        string? fileName = (await dialogService.ShowSaveFileDialogAsync("Save User", "ovpn", owner))?.Path.LocalPath;
+        if (fileName is null) return;
 
         string data = $"""
                        client

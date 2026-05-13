@@ -16,5 +16,5 @@ public partial class AddUserPopup : Window, IDialog
     public string? Username { get; set; }
 
     public void Ok() => 
-        Close(Username);
+        Close(Username ?? "");
 }

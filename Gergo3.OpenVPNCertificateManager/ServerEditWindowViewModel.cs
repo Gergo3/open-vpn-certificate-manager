@@ -54,7 +54,8 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
     {
         try
         {
-            string name = await windowService.ShowDialog<AddUserPopup, string>(this);
+            string? name = await windowService.ShowDialog<AddUserPopup, string?>(this);
+            if (name is null) return;
             if (string.IsNullOrWhiteSpace(name))
             {
                 _ = dialogService.ShowMessageAsync("Name can not be empty", "Name cannot be empty", this);
@@ -69,7 +70,7 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
         }
         catch (PasswordNotSetException e)
         {
-            _ = dialogService.ShowMessageAsync("Password not set", "Enter password for this operation", this);
+            _ = dialogService.ShowMessageAsync("Password not set", "Password not set", this);
         }
         catch (Exception e)
         {
@@ -81,13 +82,45 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
     }
     
     
-    public async Task ExportServerAsync() => 
-        await serverExporterService.ExportServerAsync(Server);
-    
+    public async Task ExportServerAsync()
+    {
+        try
+        {
+            await serverExporterService.ExportServerAsync(Server, this);
+        }
+        catch (PasswordNotSetException e)
+        {
+            _ = dialogService.ShowMessageAsync("Password not set", "Password not set", this);
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e);
+            _ = dialogService.ShowErrorAsync(e.Message, e.ToString(), this);
+        }
+    }
 
-    public async Task ExportUserAsync() => 
-        await userExporterService.ExportUserAsync(SelectedUser, Server);
-    
+
+    public async Task ExportUserAsync()
+    {
+        try
+        {
+            if (SelectedUser is null) return;
+            _ = Server ?? throw new InvalidOperationException("Server is not set");
+
+            await userExporterService.ExportUserAsync(SelectedUser, Server, this);
+
+        }
+        catch (PasswordNotSetException e)
+        {
+            _ = dialogService.ShowMessageAsync("Password not set", "Password not set", this);
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e);
+            _ = dialogService.ShowErrorAsync(e.Message, e.ToString(), this);
+        }
+    }
+
 
     public async Task RefreshUsersAsync() => 
         Users = await userService.GetUsersAsync(Server);

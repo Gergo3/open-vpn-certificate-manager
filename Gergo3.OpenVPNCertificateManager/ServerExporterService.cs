@@ -8,17 +8,22 @@ using ZipFile = System.IO.Compression.ZipFile;
 
 namespace Gergo3.OpenVPNCertificateManager;
 
-public class ServerExporterService : IServerExporterService
+public class ServerExporterService(IDialogService dialogService) : IServerExporterService
 {
-    public async Task ExportServerAsync(Server server)
+    public async Task ExportServerAsync(Server server, object owner)
     {
+        ArgumentNullException.ThrowIfNull(server);
+        ArgumentNullException.ThrowIfNull(owner);
+        
         string caPem = server.CaCrt;
 
         string serverPem = server.ServerCrt;
 
         string serverKey = server.ServerKey;
 
-        string filePath = Path.Join(AppDir.OutputDir.FullName, $"{server.Name}-server.zip");
+        //string filePath = Path.Join(AppDir.OutputDir.FullName, $"{server.Name}-server.zip");
+        string? filePath = (await dialogService.ShowSaveFileDialogAsync("Save server", "zip", owner))?.Path.LocalPath;
+        if (filePath is null) return;
 
         DirectoryInfo exportDir = AppDir.TempDir.CreateSubdirectory(server.Name);
 

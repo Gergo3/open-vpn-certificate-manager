@@ -20,19 +20,36 @@ public class User
     
     [Required]
     public string CertString {get; set;}
-    
+
+    private X509Certificate2? _certificate;
+    /// <summary>
+    /// User certificate
+    /// </summary>
+    /// <exception cref="PasswordNotSetException">Thrown when <see cref="Password"/> is not set</exception>
     [NotMapped]
     public X509Certificate2 Certificate =>
-        field ??= X509CertificateLoader.LoadPkcs12(
+        _certificate ??= X509CertificateLoader.LoadPkcs12(
             Convert.FromBase64String(CertString),
             Password ?? throw new PasswordNotSetException(),
             X509KeyStorageFlags.Exportable |
             X509KeyStorageFlags.EphemeralKeySet,
             Pkcs12LoaderLimits.Defaults);
-    
+
     [NotMapped]
-    public string? Password { private get; set;}
+    public string? Password
+    {
+        private get;
+        set
+        {
+            field = value;
+            _certificate = null;
+        }
+    }
     
+    /// <summary>
+    /// User certificate in Crt format
+    /// </summary>
+    /// <exception cref="PasswordNotSetException">Thrown when <see cref="Password"/> is not set</exception>
     [NotMapped]
     public string Crt => 
         "-----BEGIN CERTIFICATE-----\n" +
@@ -41,6 +58,10 @@ public class User
             Base64FormattingOptions.InsertLineBreaks) +
         "\n-----END CERTIFICATE-----";
     
+    /// <summary>
+    /// User key
+    /// </summary>
+    /// <exception cref="PasswordNotSetException">Thrown when <see cref="Password"/> is not set</exception>
     [NotMapped]
     public string Key => 
         "-----BEGIN PRIVATE KEY-----\n" +

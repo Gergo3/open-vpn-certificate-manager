@@ -30,33 +30,43 @@ public class Server
     
     [Required]
     public Interface Interface { get; private set; }
-    
+
     [NotMapped]
-    public string? Password { private get; set; }
+    public string? Password
+    {
+        private get;
+        set
+        {
+            field = value;
+            _caCert = null;
+            _serverCert = null;
+        }
+    }
     
     [InverseProperty(nameof(User.Server))]
     public ICollection<User> Users { get; private set; }
 
     [Required]
     public string CaCertString { get; private set; }
-
+    private X509Certificate2? _caCert;
     /// <summary>
-    /// Ca certificate in PCKS format
+    /// Ca certificate
     /// </summary>
     /// <exception cref="PasswordNotSetException">Thrown when <see cref="Password"/> is not set</exception>
     [NotMapped]
     public X509Certificate2 CaCert =>
-        field ??= X509CertificateLoader.LoadPkcs12(Convert.FromBase64String(CaCertString),Password ?? throw new PasswordNotSetException());
+        _caCert ??= X509CertificateLoader.LoadPkcs12(Convert.FromBase64String(CaCertString),Password ?? throw new PasswordNotSetException());
     
     [Required]
     public string ServerCertString { get; private set; }
+    private X509Certificate2? _serverCert;
     /// <summary>
-    /// Server certificate in PCKS format
+    /// Server certificate
     /// </summary>
     /// <exception cref="PasswordNotSetException">Thrown when <see cref="Password"/> is not set</exception>
     [NotMapped]
     public X509Certificate2 ServerCert =>
-        field ??= X509CertificateLoader.LoadPkcs12(
+        _serverCert ??= X509CertificateLoader.LoadPkcs12(
             Convert.FromBase64String(ServerCertString),
             Password ?? throw new PasswordNotSetException(),
             X509KeyStorageFlags.Exportable |
