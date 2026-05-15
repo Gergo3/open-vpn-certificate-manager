@@ -14,9 +14,9 @@ public class UserExporterService(IDialogService dialogService) : IUserExporterSe
         ArgumentNullException.ThrowIfNull(server);
         ArgumentNullException.ThrowIfNull(owner);
 
-        //string fileName = System.IO.Path.Join(AppDir.OutputDir.FullName, user.Username.Replace(' ', '-') + ".ovpn");
-        string? fileName = (await dialogService.ShowSaveFileDialogAsync("Save User", "ovpn", owner))?.Path.LocalPath;
-        if (fileName is null) return;
+        string fileName = System.IO.Path.Join(AppDir.OutputDir.FullName, user.Username.Replace(' ', '-') + ".ovpn");
+        //string? fileName = (await dialogService.ShowSaveFileDialogAsync("Save User", "ovpn", owner))?.Path.LocalPath;
+        //if (fileName is null) return;
 
         string data = $"""
                        client

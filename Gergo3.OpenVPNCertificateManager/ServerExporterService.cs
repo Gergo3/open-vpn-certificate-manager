@@ -21,9 +21,9 @@ public class ServerExporterService(IDialogService dialogService) : IServerExport
 
         string serverKey = server.ServerKey;
 
-        //string filePath = Path.Join(AppDir.OutputDir.FullName, $"{server.Name}-server.zip");
-        string? filePath = (await dialogService.ShowSaveFileDialogAsync("Save server", "zip", owner))?.Path.LocalPath;
-        if (filePath is null) return;
+        string filePath = Path.Join(AppDir.OutputDir.FullName, $"{server.Name}-server.zip");
+        //string? filePath = (await dialogService.ShowSaveFileDialogAsync("Save server", "zip", owner))?.Path.LocalPath;
+        //if (filePath is null) return;
 
         DirectoryInfo exportDir = AppDir.TempDir.CreateSubdirectory(server.Name);
 
