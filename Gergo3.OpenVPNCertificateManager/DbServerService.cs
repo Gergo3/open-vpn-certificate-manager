@@ -34,7 +34,7 @@ public class DbServerService(IDbContextFactory<OpenVpnCertificateManagerContext>
                 throw new InvalidOperationException("Server does not exist, or was deleted");
             }
         }
-        catch (DbUpdateConcurrencyException e)
+        catch (DbUpdateConcurrencyException)
         {
             throw new InvalidOperationException("Server does not exist, or was deleted");
         }

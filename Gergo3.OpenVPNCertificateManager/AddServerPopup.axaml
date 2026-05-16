@@ -17,8 +17,7 @@
                      Watermark="name"
                      Text="{Binding NameInput}"
                      />
-            <TextBox 
-                     Grid.ColumnSpan="1"
+            <TextBox Grid.Column="0"
                      Grid.Row="1"
                      Watermark="domain"
                      Text="{Binding Domain}"
@@ -28,7 +27,8 @@
                            Watermark="port"
                            Value="{Binding Port}"
                            />
-            <ComboBox Grid.Row="2"
+            <ComboBox Grid.Row="2" 
+                      Grid.Column="0"
                       PlaceholderText="protocol"
                       SelectedValue="{Binding Protocol}"
                       ItemsSource="{Binding Protocols}"
@@ -40,7 +40,8 @@
                       ItemsSource="{Binding Interfaces}"
             />
             <TextBox
-                Grid.ColumnSpan="2"
+                Grid.ColumnSpan="2" 
+                Grid.Column="0"
                 Grid.Row="3"
                 PasswordChar="*"
                 Watermark="password"
@@ -48,6 +49,7 @@
             />
             <TextBox
                      Grid.ColumnSpan="2"
+                     Grid.Column="0"
                      Grid.Row="4"
                      PasswordChar="*"
                      Watermark="password again"

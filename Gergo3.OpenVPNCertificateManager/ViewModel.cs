@@ -4,11 +4,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace Gergo3.OpenVPNCertificateManager;
 
-public class ViewModel : INotifyPropertyChanged
+public sealed class ViewModel : INotifyPropertyChanged
 {
     #region Constructor
     private readonly IWindowService _windowService;
@@ -79,7 +78,7 @@ public class ViewModel : INotifyPropertyChanged
 
             await _serverService.RemoveServerAsync(server);
         }
-        catch (ArgumentNullException e)
+        catch (ArgumentNullException)
         {
                 return;
         }
@@ -140,12 +139,13 @@ public class ViewModel : INotifyPropertyChanged
     #region PropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    // ReSharper disable once UnusedMember.Local
+    private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(field, value)) return false;
         field = value;

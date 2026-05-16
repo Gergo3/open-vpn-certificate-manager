@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using JetBrains.Annotations;
 
 namespace Gergo3.OpenVPNCertificateManager;
 
@@ -44,10 +45,10 @@ public class Server
     }
     
     [InverseProperty(nameof(User.Server))]
-    public ICollection<User> Users { get; private set; }
+    public ICollection<User> Users { get; [UsedImplicitly] private set; }
 
     [Required]
-    public string CaCertString { get; private set; }
+    public byte[] CaCertData { get; private set; }
     private X509Certificate2? _caCert;
     /// <summary>
     /// Ca certificate
@@ -55,10 +56,10 @@ public class Server
     /// <exception cref="PasswordNotSetException">Thrown when <see cref="Password"/> is not set</exception>
     [NotMapped]
     public X509Certificate2 CaCert =>
-        _caCert ??= X509CertificateLoader.LoadPkcs12(Convert.FromBase64String(CaCertString),Password ?? throw new PasswordNotSetException());
+        _caCert ??= X509CertificateLoader.LoadPkcs12(CaCertData,Password ?? throw new PasswordNotSetException());
     
     [Required]
-    public string ServerCertString { get; private set; }
+    public byte[] ServerCertData { get; private set; }
     private X509Certificate2? _serverCert;
     /// <summary>
     /// Server certificate
@@ -67,7 +68,7 @@ public class Server
     [NotMapped]
     public X509Certificate2 ServerCert =>
         _serverCert ??= X509CertificateLoader.LoadPkcs12(
-            Convert.FromBase64String(ServerCertString),
+            ServerCertData,
             Password ?? throw new PasswordNotSetException(),
             X509KeyStorageFlags.Exportable |
             X509KeyStorageFlags.EphemeralKeySet,
@@ -166,7 +167,7 @@ public class Server
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         
         CertificateRequest request =
-            CreateCertificateRequest(name, false);
+            CreateCertificateRequest(name);
 
         request.CertificateExtensions.Add(
             new X509KeyUsageExtension(
@@ -211,9 +212,11 @@ public class Server
             .CopyWithPrivateKey(privateKey);
     }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     //for EntityFramework
     private Server() {}
     public Server(string name, string domain, string password, Interface nic, Protocol protocol, int port)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     {
         Id = Guid.NewGuid();
         Name = name;
@@ -223,19 +226,16 @@ public class Server
         Protocol = protocol;
         Port = port;
         
-        CaCertString =
-            Convert.ToBase64String(
+        CaCertData =
             CreateCertificateRequest($"{name}-ca", true)
             .CreateSelfSigned(
             DateTimeOffset.Now,
             DateTimeOffset.Now.AddYears(CaLifeTime))
-            .Export(X509ContentType.Pfx, Password)
-            );
+            .Export(X509ContentType.Pfx, Password);
 
-        ServerCertString =
-            Convert.ToBase64String(
+        ServerCertData =
                 CreateCertificate($"{name}-server", true)
-                    .Export(X509ContentType.Pfx, Password));
+                    .Export(X509ContentType.Pfx, Password);
     }
 
     /// <summary>
@@ -249,17 +249,15 @@ public class Server
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         
-        User user = new();
-        
-        user.Username = name;
-        user.ServerId = Id;
+        User user = new()
+        {
+            Username = name,
+            ServerId = Id,
+            CertData = CreateCertificate($"{Name}-{name}")
+                    .Export(X509ContentType.Pfx, Password),
+        };
 
-        user.CertString =
-            Convert.ToBase64String(
-                CreateCertificate($"{Name}-{name}", false)
-                    .Export(X509ContentType.Pfx, Password));
 
-        
         return user;
     }
 }

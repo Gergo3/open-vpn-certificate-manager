@@ -1,8 +1,6 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Avalonia.Controls.Shapes;
 
 namespace Gergo3.OpenVPNCertificateManager;
 
@@ -14,7 +12,7 @@ public class UserExporterService(IDialogService dialogService) : IUserExporterSe
         ArgumentNullException.ThrowIfNull(server);
         ArgumentNullException.ThrowIfNull(owner);
 
-        string fileName = System.IO.Path.Join(AppDir.OutputDir.FullName, user.Username.Replace(' ', '-') + ".ovpn");
+        string fileName = Path.Join(AppDir.OutputDir.FullName, user.Username.Replace(' ', '-') + ".ovpn");
         //string? fileName = (await dialogService.ShowSaveFileDialogAsync("Save User", "ovpn", owner))?.Path.LocalPath;
         //if (fileName is null) return;
 

@@ -31,7 +31,7 @@ public static class AppDir
         
         if (Directory.Exists(TempDirPath)) TempDir?.Delete(true);
         
-        AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+        AppDomain.CurrentDomain.ProcessExit += (_, _) =>
         {
             try
             {

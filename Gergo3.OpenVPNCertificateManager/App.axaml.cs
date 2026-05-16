@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Gergo3.OpenVPNCertificateManager;
 
+// ReSharper disable once PartialTypeWithSinglePart
 public partial class App : Application
 {
     public override void Initialize()

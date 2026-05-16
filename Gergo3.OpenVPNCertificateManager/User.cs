@@ -7,19 +7,21 @@ namespace Gergo3.OpenVPNCertificateManager;
 
 public class User
 {
+    #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     [Key]
-    public Guid Id {get; set;} = Guid.NewGuid();
+    public Guid Id {get; init;} = Guid.NewGuid();
     [MaxLength(100)]
     [Required]
     public string Username {get; set;}
     [Required]
-    public Guid ServerId {get; set;}
+    public Guid ServerId {get; init;}
     
     [ForeignKey(nameof(ServerId))]
-    public Server Server {get; set;}
+    public Server Server {get; init;}
     
     [Required]
-    public string CertString {get; set;}
+    public byte[] CertData {get; init;}
+    #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
     private X509Certificate2? _certificate;
     /// <summary>
@@ -29,7 +31,7 @@ public class User
     [NotMapped]
     public X509Certificate2 Certificate =>
         _certificate ??= X509CertificateLoader.LoadPkcs12(
-            Convert.FromBase64String(CertString),
+            CertData,
             Password ?? throw new PasswordNotSetException(),
             X509KeyStorageFlags.Exportable |
             X509KeyStorageFlags.EphemeralKeySet,

@@ -35,7 +35,7 @@ public interface IDialogService
     /// <summary>
     /// Open a file save dialog
     /// </summary>
-    /// <param name="title">Window titke</param>
+    /// <param name="title">Window title</param>
     /// <param name="type">File type</param>
     /// <param name="owner">Owner window viewmodel</param>
     /// <returns>Selected file, or null if canceled</returns>

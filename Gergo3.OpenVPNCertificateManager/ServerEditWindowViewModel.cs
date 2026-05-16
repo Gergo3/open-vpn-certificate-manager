@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Gergo3.OpenVPNCertificateManager;
 
-public class ServerEditWindowViewModel(IUserService userService, IWindowService windowService, IServerExporterService serverExporterService, IUserExporterService userExporterService, IDialogService dialogService) : INotifyPropertyChanged
+public sealed class ServerEditWindowViewModel(IUserService userService, IWindowService windowService, IServerExporterService serverExporterService, IUserExporterService userExporterService, IDialogService dialogService) : INotifyPropertyChanged
 {
     public string? Password
     {
@@ -15,7 +15,7 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
         set
         {
             field = value;
-            Server.Password = value;
+            Server?.Password = value;
             OnPropertyChanged();
         }
     }
@@ -62,13 +62,13 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
                 return;
             }
 
-            Server server = Server ?? throw new InvalidOperationException("Server is not set");
+            _ = Server ?? throw new InvalidOperationException("Server is not set");
 
             User user = Server.CreateUser(name);
 
             await userService.AddUserAsync(user);
         }
-        catch (PasswordNotSetException e)
+        catch (PasswordNotSetException)
         {
             _ = dialogService.ShowMessageAsync("Password not set", "Password not set", this);
         }
@@ -86,9 +86,9 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
     {
         try
         {
-            await serverExporterService.ExportServerAsync(Server, this);
+            await serverExporterService.ExportServerAsync(Server ?? throw new InvalidOperationException("Server is not set"), this);
         }
-        catch (PasswordNotSetException e)
+        catch (PasswordNotSetException)
         {
             _ = dialogService.ShowMessageAsync("Password not set", "Password not set", this);
         }
@@ -110,7 +110,7 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
             await userExporterService.ExportUserAsync(SelectedUser, Server, this);
 
         }
-        catch (PasswordNotSetException e)
+        catch (PasswordNotSetException)
         {
             _ = dialogService.ShowMessageAsync("Password not set", "Password not set", this);
         }
@@ -126,7 +126,7 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
     {
         try
         {
-            Users = await userService.GetUsersAsync(Server);
+            Users = await userService.GetUsersAsync(Server ?? throw new InvalidOperationException("Server is not set"));
         }
         catch (Exception e)
         {
@@ -143,12 +143,13 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
     #region PropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    // ReSharper disable once UnusedMember.Local
+    private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(field, value)) return false;
         field = value;
