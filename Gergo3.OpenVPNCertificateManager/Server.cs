@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using JetBrains.Annotations;
 
 namespace Gergo3.OpenVPNCertificateManager;
 
@@ -45,7 +44,8 @@ public class Server
     }
     
     [InverseProperty(nameof(User.Server))]
-    public ICollection<User> Users { get; [UsedImplicitly] private set; }
+    // ReSharper disable once UnusedAutoPropertyAccessor.Local
+    public ICollection<User> Users { get; private set; }
 
     [Required]
     public byte[] CaCertData { get; private set; }
@@ -214,6 +214,7 @@ public class Server
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     //for EntityFramework
+    // ReSharper disable once UnusedMember.Local
     private Server() {}
     public Server(string name, string domain, string password, Interface nic, Protocol protocol, int port)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
