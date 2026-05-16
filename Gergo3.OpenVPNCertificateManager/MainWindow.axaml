@@ -31,6 +31,21 @@
                 <DataGridTextColumn Header="Name"
                                     Binding="{Binding Name}"
                                     />
+                <DataGridTextColumn Header="Domain"
+                                    Binding="{Binding Domain}"
+                                    />
+                <DataGridTextColumn Header="Port"
+                                    Binding="{Binding Port}"
+                                    />
+                <DataGridTextColumn Header="Users"
+                                    Binding="{Binding Users.Count}"
+                                    />
+                <DataGridTextColumn Header="Interface"
+                                    Binding="{Binding Interface}"
+                                    />
+                <DataGridTextColumn Header="Protocol"
+                                    Binding="{Binding Protocol}"
+                                    />
             </DataGrid.Columns>
         </DataGrid>
         
