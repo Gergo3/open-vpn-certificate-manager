@@ -11,5 +11,7 @@ public partial class ServerEditWindow : Window, IServerEditWindow
         InitializeComponent();
 
         DataContext = viewModel;
+        
+        Closed += viewModel.Closed;
     }
 }

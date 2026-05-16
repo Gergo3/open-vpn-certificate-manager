@@ -45,5 +45,7 @@ public class ServerExporterService(IDialogService dialogService) : IServerExport
             await using Stream stream = entry.Open();
             await stream.WriteAsync(Encoding.UTF8.GetBytes(serverKey));
         });
+        
+        _ = dialogService.ShowMessageAsync($"Server exported as {filePath}", "Server exported", owner);
     }
 }

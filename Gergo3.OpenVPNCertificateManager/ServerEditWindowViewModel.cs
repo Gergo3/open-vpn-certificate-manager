@@ -122,12 +122,23 @@ public class ServerEditWindowViewModel(IUserService userService, IWindowService 
     }
 
 
-    public async Task RefreshUsersAsync() => 
-        Users = await userService.GetUsersAsync(Server);
+    public async Task RefreshUsersAsync()
+    {
+        try
+        {
+            Users = await userService.GetUsersAsync(Server);
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e);
+        }
+    }
 
-    
-    
-    
+
+    public void Closed(object? sender, EventArgs e)
+    {
+        Password =  null;
+    }
     
     #region PropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;

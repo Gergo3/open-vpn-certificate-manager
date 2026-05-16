@@ -49,5 +49,6 @@ public class UserExporterService(IDialogService dialogService) : IUserExporterSe
                        """;
         
         await File.WriteAllTextAsync(fileName, data);
+        _ = dialogService.ShowMessageAsync($"User exported as {fileName}", "User exported", owner);
     }
 }

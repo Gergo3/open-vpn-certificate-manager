@@ -23,6 +23,7 @@ public class AvaloniaWindowService(IServiceProvider provider) : IWindowService
         if (window.DataContext is ServerEditWindowViewModel viewModel)
             viewModel.Server = server;
         else throw new InvalidOperationException("Invalid view model");
+        _ = (window.DataContext as ServerEditWindowViewModel)?.RefreshUsersAsync();
         window.Show();
     }
 
