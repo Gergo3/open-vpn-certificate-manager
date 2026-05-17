@@ -29,14 +29,14 @@ public partial class AddServerPopup : Window, IDialog
                 Name = NameInput ?? throw new InputNullException(),
                 Domain = Domain ?? throw new InputNullException(),
                 Password = Password ?? throw new InputNullException(),
-                Port = Port ?? throw new InputNullException(),
-                Protocol = Protocol ?? throw new InputNullException(),
-                Interface = Interface ?? throw new InputNullException(),
+                Port = Port ?? 1194,
+                Protocol = Protocol ?? OpenVPNCertificateManager.Protocol.Udp,
+                Interface = Interface ?? OpenVPNCertificateManager.Interface.Tun,
             });
         }
         catch (InputNullException)
         {
-            _dialogService.ShowMessageAsync("Fill out all fields", "Fill out all fields", this);
+            _dialogService.ShowMessageAsync("Fill out all required fields (*)", "Fill out all fields", this);
         }
         catch (PasswordDoesntMatchException)
         {

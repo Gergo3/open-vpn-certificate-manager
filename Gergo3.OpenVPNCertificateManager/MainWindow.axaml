@@ -37,9 +37,6 @@
                 <DataGridTextColumn Header="Port"
                                     Binding="{Binding Port}"
                                     />
-                <DataGridTextColumn Header="Users"
-                                    Binding="{Binding Users.Count}"
-                                    />
                 <DataGridTextColumn Header="Interface"
                                     Binding="{Binding Interface}"
                                     />

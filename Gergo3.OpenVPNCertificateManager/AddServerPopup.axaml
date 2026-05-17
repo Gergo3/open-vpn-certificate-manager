@@ -14,37 +14,37 @@
               >
             <TextBox 
                      Grid.ColumnSpan="2"
-                     Watermark="name"
+                     Watermark="name*"
                      Text="{Binding NameInput}"
                      />
             <TextBox Grid.Column="0"
                      Grid.Row="1"
-                     Watermark="domain"
+                     Watermark="domain*"
                      Text="{Binding Domain}"
                      />
             <NumericUpDown Grid.Row="1"
                            Grid.Column="1"
-                           Watermark="port"
+                           Watermark="port(1194)"
                            Value="{Binding Port}"
                            />
             <ComboBox Grid.Row="2" 
                       Grid.Column="0"
-                      PlaceholderText="protocol"
+                      PlaceholderText="protocol(udp)"
                       SelectedValue="{Binding Protocol}"
                       ItemsSource="{Binding Protocols}"
                       />
             <ComboBox Grid.Row="2"
                       Grid.Column="1"
-                      PlaceholderText="Interface"
+                      PlaceholderText="Interface(tun)"
                       SelectedValue="{Binding Interface}"
                       ItemsSource="{Binding Interfaces}"
-            />
+                      />
             <TextBox
                 Grid.ColumnSpan="2" 
                 Grid.Column="0"
                 Grid.Row="3"
                 PasswordChar="*"
-                Watermark="password"
+                Watermark="password*"
                 Text="{Binding Password}"
             />
             <TextBox
@@ -52,7 +52,7 @@
                      Grid.Column="0"
                      Grid.Row="4"
                      PasswordChar="*"
-                     Watermark="password again"
+                     Watermark="password again*"
                      Text="{Binding PasswordConfirmation}"
                      />
             <Button Grid.Column="0" 
